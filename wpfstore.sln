@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logic", "Logic\Logic.csproj", "{4C72A71D-22AF-476F-9541-8743D2981B71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store", "Logic\Store.csproj", "{4C72A71D-22AF-476F-9541-8743D2981B71}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logic.Tests", "Logic.Tests\Logic.Tests.csproj", "{E886C01D-FAD9-4BA7-9B14-C2F4FCE8AD99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Tests", "Logic.Tests\Store.Tests.csproj", "{E886C01D-FAD9-4BA7-9B14-C2F4FCE8AD99}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF", "WPF\WPF.csproj", "{9547E20F-4219-4127-91DE-507697930D24}"
 EndProject
