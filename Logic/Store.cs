@@ -6,9 +6,15 @@ namespace Logic
     public class Store
     {
         private Product[] products;
+        private readonly string productItemsPath = "";
         public static void Main()
         {
 
+        }
+
+        private void FetchProducts()
+        {
+            
         }
 
         private void ShowCart()
