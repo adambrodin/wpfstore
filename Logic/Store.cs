@@ -1,36 +1,37 @@
-﻿using System;
+﻿using Store;
+using System;
 
 namespace Logic
 {
-    public class Product
-    {
-        public string title, description, imagePath;
-        public double price;
-    }
-
     public class Store
     {
+        private Product[] products;
         public static void Main()
         {
 
         }
 
-        public void ShowCart()
+        private void ShowCart()
         {
 
         }
 
-        public void ApplyCoupon(String couponName)
+        private void ApplyCoupon(String couponName)
         {
 
         }
 
-        public String GenerateReceipt()
+        private String GenerateReceipt()
         {
             return null;
         }
 
-        public void Checkout()
+        private void Checkout()
+        {
+
+        }
+
+        private void SaveCart()
         {
 
         }
