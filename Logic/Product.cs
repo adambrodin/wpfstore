@@ -2,8 +2,10 @@
 {
     class Product
     {
-        public string title, description, imagePath;
-        public double price;
+        public string title { get; set; }
+        public string description { get; set; }
+        public string imagePath { get; set; }
+        public double price { get; set; }
 
         public Product(string title, string description, string imagePath, double price)
         {
@@ -12,5 +14,6 @@
             this.imagePath = imagePath;
             this.price = price;
         }
+
     }
 }
