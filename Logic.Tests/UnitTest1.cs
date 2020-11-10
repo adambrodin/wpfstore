@@ -1,14 +1,13 @@
-using System;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Logic.Tests
 {
+    [TestClass]
     public class UnitTest1
     {
-        [Fact]
-        public void Test1()
+        [TestMethod]
+        public void TestMethod1()
         {
-
         }
     }
 }
