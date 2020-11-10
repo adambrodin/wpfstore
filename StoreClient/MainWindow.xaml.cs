@@ -12,16 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Logic;
 
 namespace StoreClient
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private String[] productsForSale = new string[] { "Volvo V70 - 50000 SEK", "Ferrari 458 - 7 500 000 SEK" };
+        private Product[] productsForSale = new Product[] { new Product("Volvo V70", "Snabb bil", "--", 15000), new Product("Volvo V70", "Snabb bil", "--", 15000) };
         private ListBox productsBox;
+        private Grid mainGrid;
+        private ScrollViewer root;
         public MainWindow()
         {
             InitializeComponent();
@@ -35,25 +35,58 @@ namespace StoreClient
             Height = 700;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-            ScrollViewer root = new ScrollViewer();
+            root = new ScrollViewer();
             root.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             Content = root;
 
-            Grid grid = new Grid();
-            root.Content = grid;
-            grid.Margin = new Thickness(5);
-            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            mainGrid = new Grid();
+            root.Content = mainGrid;
+            mainGrid.Margin = new Thickness(5);
+            mainGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            mainGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            mainGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            mainGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
             productsBox = new ListBox();
-            foreach (string s in productsForSale)
-            {
-                productsBox.Items.Add(s);
-            }
-            grid.Children.Add(productsBox);
-            productsBox.MouseDoubleClick += AddToCart;
+            SetupProductList();
+            mainGrid.Children.Add(productsBox);
+            productsBox.MouseDoubleClick += ProductDoubleClick;
 
+            Grid buttonGrid = new Grid();
+
+            Button hideUI = new Button
+            {
+                Padding = new Thickness(5),
+                Margin = new Thickness(5, 5, 5, 5),
+                Content = "Click to hide",
+                FontSize = 20
+            };
+
+
+            Button showUI = new Button
+            {
+                Padding = new Thickness(5),
+                Margin = new Thickness(5, 0, 5, 100),
+                Content = "Click to show",
+                FontSize = 20
+            };
+
+            buttonGrid.Children.Add(hideUI);
+            buttonGrid.Children.Add(showUI);
+
+            mainGrid.Children.Add(buttonGrid);
+            Grid.SetColumn(buttonGrid, 2);
+
+            hideUI.Click += HideUIClick;
+            showUI.Click += ShowUIClick;
+        }
+
+        private void SetupProductList()
+        {
+            foreach (Product p in productsForSale)
+            {
+                productsBox.Items.Add(p.title);
+            }
         }
 
         private void AddItems()
@@ -61,9 +94,27 @@ namespace StoreClient
 
         }
 
-        private void AddToCart(object sender, MouseEventArgs e)
+        private void HideUIClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("You purchased: " + productsForSale[productsBox.SelectedIndex]);
+            productsBox.Visibility = Visibility.Hidden;
+        }
+
+        private void ShowUIClick(object sender, RoutedEventArgs e)
+        {
+            productsBox.Visibility = Visibility.Visible;
+        }
+
+        private void ProductDoubleClick(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                string productName = productsForSale[productsBox.SelectedIndex].title;
+                MessageBox.Show("You purchased: " + productName);
+            }
+            catch
+            {
+                return;
+            }
         }
     }
 }

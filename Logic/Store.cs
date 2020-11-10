@@ -1,5 +1,5 @@
-﻿using Store;
-using System;
+﻿using System;
+using System.IO;
 
 namespace Logic
 {
@@ -9,7 +9,7 @@ namespace Logic
         private readonly string productItemsPath = "";
         public static void Main()
         {
-
+            //Console.WriteLine(Path.GetTempPath());
         }
 
         private void FetchProducts()
