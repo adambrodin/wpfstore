@@ -1,6 +1,10 @@
-﻿namespace Store
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Logic.Models
 {
-    class Product
+    public class Product
     {
         public string title { get; set; }
         public string description { get; set; }
@@ -14,6 +18,5 @@
             this.imagePath = imagePath;
             this.price = price;
         }
-
     }
 }
