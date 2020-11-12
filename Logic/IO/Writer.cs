@@ -6,15 +6,11 @@ using System.IO;
 
 namespace Logic.IO
 {
-    public class Writer
+    public class Writer : FileHelper
     {
-        private string GetFilePath(string fileName)
-        {
-            string tempPath = Path.GetTempPath();
-            return Path.Combine(tempPath, Path.GetFileName(fileName));
-        }
+        
 
-        public void WriteDataToCsv(IEnumerable<Object> data, string fileName)
+        public void WriteDataToCsv(IEnumerable<object> data, string fileName)
         {
             Console.WriteLine(GetFilePath(fileName));
             using (var ms = new MemoryStream())
