@@ -16,7 +16,7 @@ namespace Logic.Services
             this._reader = new Reader();
         }
 
-        public IEnumerable<Product> FetchProducts()
+        public List<Product> FetchProducts()
         {
             var products = this._reader.ReadDataFromCsv<Product>("products.csv");
             if (products.Any())
@@ -24,7 +24,7 @@ namespace Logic.Services
                 throw new IndexOutOfRangeException("No products found");
             }
 
-            return products;
+            return products.ToList();
         }
     }
 }
