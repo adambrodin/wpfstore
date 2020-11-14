@@ -62,6 +62,7 @@ namespace StoreClient
             currentPanel = panel;
             mainBorder.Child = panel;
             Content = mainBorder;
+            ResizeCurrentPanel();
         }
 
         private StackPanel MainLayout()
@@ -212,15 +213,21 @@ namespace StoreClient
             }
         }
 
+        private void ResizeCurrentPanel()
+        {
+            currentPanel.Width = windowWidth;
+            currentPanel.Height = windowHeight;
+        }
+
         protected void OnWindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
             windowWidth = e.NewSize.Width;
             windowHeight = e.NewSize.Height;
 
+
             if (currentPanel != null)
             {
-                currentPanel.Width = windowWidth;
-                currentPanel.Height = windowHeight;
+                ResizeCurrentPanel();
             }
         }
     }
