@@ -1,6 +1,6 @@
-﻿namespace Store
+﻿namespace Logic
 {
-    class Product
+    public class Product
     {
         public string title, description, imagePath;
         public double price;
