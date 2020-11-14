@@ -1,91 +1,187 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 using Logic;
 
 namespace StoreClient
 {
     public partial class MainWindow : Window
     {
-        private Product[] productsForSale = new Product[] { new Product("Volvo V70", "Snabb bil", "--", 15000), new Product("Volvo V70", "Snabb bil", "--", 15000) };
-        private ListBox productsBox;
-        private Grid mainGrid;
-        private ScrollViewer root;
+        private double windowWidth = 1280, windowHeight = 720;
+        private Product[] productsForSale = new Product[] { new Product("Ethereum", "A solid cryptocurrency", "-", 473.53), new Product("Ethereum", "A solid cryptocurrency", "-", 473.53) };
+        private ListBox productsBox, cartBox;
+        private Button cartBtn, backToMainBtn;
+        private Border mainBorder;
+        private StackPanel currentPanel, mainPanel, cartPanel;
+
+        private enum View
+        {
+            Main,
+            Cart,
+            Receipt
+        }
+
         public MainWindow()
         {
             InitializeComponent();
             Start();
         }
 
+        private void FetchProducts()
+        {
+            // TODO implement product service
+        }
+
         private void Start()
         {
+            FetchProducts();
+
+            // Window settings
             Title = "Store";
-            Width = 700;
-            Height = 700;
+            Width = windowWidth;
+            Height = windowHeight;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.SizeChanged += OnWindowSizeChanged;
 
-            root = new ScrollViewer();
-            root.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            Content = root;
+            // Element setup
+            mainBorder = new Border();
+            mainBorder.Background = Brushes.LightBlue;
+            mainBorder.BorderBrush = Brushes.Black;
+            mainBorder.Padding = new Thickness(15);
+            mainBorder.BorderThickness = new Thickness(1);
 
-            mainGrid = new Grid();
-            root.Content = mainGrid;
-            mainGrid.Margin = new Thickness(5);
-            mainGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            mainGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            mainGrid.ColumnDefinitions.Add(new ColumnDefinition());
-            mainGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            mainPanel = MainLayout();
+            cartPanel = CartLayout();
+            SetLayout(mainPanel);
+        }
 
-            productsBox = new ListBox();
-            SetupProductList();
-            mainGrid.Children.Add(productsBox);
+        private void SetLayout(StackPanel panel)
+        {
+            currentPanel = panel;
+            mainBorder.Child = panel;
+            Content = mainBorder;
+        }
+
+        private StackPanel MainLayout()
+        {
+            StackPanel p = new StackPanel()
+            {
+                Background = Brushes.Azure,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top
+            };
+
+            TextBlock storeText = new TextBlock
+            {
+                Margin = new Thickness(10),
+                FontSize = 30,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Text = "Cryptocurrency Store"
+            };
+
+            TextBlock productListText = new TextBlock
+            {
+                Margin = new Thickness(40, 0, 0, 0),
+                FontSize = 20,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Text = "Available cryptocurrencies"
+            };
+
+            productsBox = new ListBox
+            {
+                FontSize = 24,
+                BorderBrush = Brushes.Red,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(30, -150, 0, -300),
+                Padding = new Thickness(5)
+            };
             productsBox.MouseDoubleClick += ProductDoubleClick;
+            SetupProductList();
 
-            Grid buttonGrid = new Grid();
-
-            Button hideUI = new Button
+            cartBtn = new Button
             {
-                Padding = new Thickness(5),
-                Margin = new Thickness(5, 5, 5, 5),
-                Content = "Click to hide",
-                FontSize = 20
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(50),
+                Padding = new Thickness(20),
+                Content = "Show Cart"
+            };
+            cartBtn.Click += CartBtnClick;
+
+            p.Width = windowWidth;
+            p.Height = windowHeight;
+            p.Children.Add(storeText);
+            p.Children.Add(productListText);
+            p.Children.Add(cartBtn);
+            p.Children.Add(productsBox);
+
+            return p;
+        }
+
+        private StackPanel CartLayout()
+        {
+            StackPanel p = new StackPanel()
+            {
+                Background = Brushes.Beige,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top
             };
 
-
-            Button showUI = new Button
+            TextBlock storeText = new TextBlock
             {
-                Padding = new Thickness(5),
-                Margin = new Thickness(5, 0, 5, 100),
-                Content = "Click to show",
-                FontSize = 20
+                Margin = new Thickness(10),
+                FontSize = 30,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Text = "Cart"
             };
 
-            buttonGrid.Children.Add(hideUI);
-            buttonGrid.Children.Add(showUI);
+            TextBlock productListText = new TextBlock
+            {
+                Margin = new Thickness(40, 0, 0, 0),
+                FontSize = 20,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Text = "Currencies added to cart"
+            };
 
-            mainGrid.Children.Add(buttonGrid);
-            Grid.SetColumn(buttonGrid, 2);
+            cartBox = new ListBox
+            {
+                FontSize = 24,
+                BorderBrush = Brushes.Red,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(30, -150, 0, -300),
+                Padding = new Thickness(5)
+            };
 
-            hideUI.Click += HideUIClick;
-            showUI.Click += ShowUIClick;
+            cartBox.Items.Add("Example Cart Item 1");
+            cartBox.Items.Add("Example Cart Item 2");
+            cartBox.Items.Add("Example Cart Item 3");
+
+
+            backToMainBtn = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(50),
+                Padding = new Thickness(20),
+                Content = "Back"
+            };
+            backToMainBtn.Click += BackToMainBtnClick;
+
+            p.Width = windowWidth;
+            p.Height = windowHeight;
+            p.Children.Add(storeText);
+            p.Children.Add(productListText);
+            p.Children.Add(backToMainBtn);
+            p.Children.Add(cartBox);
+
+            return p;
         }
 
         private void SetupProductList()
         {
             foreach (Product p in productsForSale)
             {
-                productsBox.Items.Add(p.title);
+                productsBox.Items.Add($"{p.title} - {p.price} USD");
             }
         }
 
@@ -94,26 +190,37 @@ namespace StoreClient
 
         }
 
-        private void HideUIClick(object sender, RoutedEventArgs e)
+        private void CartBtnClick(object sender, RoutedEventArgs e)
         {
-            productsBox.Visibility = Visibility.Hidden;
+            SetLayout(cartPanel);
         }
 
-        private void ShowUIClick(object sender, RoutedEventArgs e)
+        private void BackToMainBtnClick(object sender, RoutedEventArgs e)
         {
-            productsBox.Visibility = Visibility.Visible;
+            SetLayout(mainPanel);
         }
-
         private void ProductDoubleClick(object sender, MouseEventArgs e)
         {
             try
             {
-                string productName = productsForSale[productsBox.SelectedIndex].title;
-                MessageBox.Show("You purchased: " + productName);
+                Product product = productsForSale[productsBox.SelectedIndex];
+                MessageBox.Show($"You purchased 1x {product.title} for a total of ${product.price}");
             }
             catch
             {
                 return;
+            }
+        }
+
+        protected void OnWindowSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            windowWidth = e.NewSize.Width;
+            windowHeight = e.NewSize.Height;
+
+            if (currentPanel != null)
+            {
+                currentPanel.Width = windowWidth;
+                currentPanel.Height = windowHeight;
             }
         }
     }
