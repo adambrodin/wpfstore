@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Logic.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,9 +12,9 @@ namespace Logic.Services
             throw new Exception("Not implemented");
         }
 
-        public void ValidateCoupon()
+        public Coupon ValidateCoupon(String coupon)
         {
-            throw new Exception("Not implemented");
+            return new Coupon { code = coupon, discount = 0.5, precent = true };
         }
     }
 }
