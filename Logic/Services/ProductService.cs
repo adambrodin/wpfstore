@@ -19,7 +19,7 @@ namespace Logic.Services
         public List<Product> FetchProducts()
         {
             var products = this._reader.ReadDataFromCsv<Product>("products.csv");
-            if (products.Any())
+            if (!products.Any())
             {
                 throw new IndexOutOfRangeException("No products found");
             }

@@ -1,16 +1,21 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using Logic;
+using Logic.Services;
+using Logic.Models;
+using System.Collections.Generic;
 
 namespace StoreClient
 {
     public partial class MainWindow : Window
     {
         private double windowWidth = 1280, windowHeight = 720;
-        private Product[] productsForSale = new Product[] { new Product("Ethereum", "A solid cryptocurrency", "-", 473.53), new Product("Ethereum", "A solid cryptocurrency", "-", 473.53) };
+        private List<Product> productsForSale = new List<Product>();
+        //private Product[] productsForSale = new Product[] { new Product("Ethereum", "A solid cryptocurrency", "-", 473.53), new Product("Ethereum", "A solid cryptocurrency", "-", 473.53) };
+        private ProductService productService;
         private ListBox productsBox, cartBox;
         private Button cartBtn, backToMainBtn;
         private Border mainBorder;
@@ -26,18 +31,25 @@ namespace StoreClient
         public MainWindow()
         {
             InitializeComponent();
+            this.productService = new ProductService { };
+
             Start();
         }
 
         private void FetchProducts()
         {
-            // TODO implement product service
+            try
+            {
+                this.productsForSale = this.productService.FetchProducts();
+            } catch (IndexOutOfRangeException e)
+            {
+                MessageBox.Show($"Error: {e.Message}");
+            }
+            
         }
 
         private void Start()
         {
-            FetchProducts();
-
             // Window settings
             Title = "Store";
             Width = windowWidth;
@@ -52,6 +64,7 @@ namespace StoreClient
             mainBorder.Padding = new Thickness(15);
             mainBorder.BorderThickness = new Thickness(1);
 
+            FetchProducts();
             mainPanel = MainLayout();
             cartPanel = CartLayout();
             SetLayout(mainPanel);
