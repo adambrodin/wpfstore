@@ -13,9 +13,9 @@ namespace Logic.Services
             items.ForEach(item =>
             {
                 this._receipt.totalPrice += item.price;
-                this._receipt.products.Add(item);
             });
             this._receipt.discount = 0;
+            this._receipt.products = items;
         }
 
         public Receipt Checkout(List<Cart> items)

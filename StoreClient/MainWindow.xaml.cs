@@ -17,7 +17,9 @@ namespace StoreClient
         private CartService cartService;
         private CheckoutService checkoutService;
         private ListBox productsBox, cartBox;
-        private Button cartBtn, backToMainBtn, checkoutBtn;
+        private TextBlock cartTotalPrice;
+        private TextBox couponTextBox;
+        private Button cartBtn, backToMainBtn, checkoutBtn, applyCouponBtn;
         private Border mainBorder;
         private StackPanel currentPanel, mainPanel, cartPanel;
 
@@ -26,6 +28,7 @@ namespace StoreClient
             InitializeComponent();
             this.productService = new ProductService { };
             cartService = new CartService { };
+            checkoutService = new CheckoutService { };
             Start();
         }
 
@@ -147,6 +150,14 @@ namespace StoreClient
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Text = "Currencies added to cart"
             };
+            cartTotalPrice = new TextBlock
+            {
+                Margin = new Thickness(0, 0, 0, 0),
+                Padding = new Thickness(5),
+                FontSize = 30,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Text = "Total price: $0"
+            };
 
             cartBox = new ListBox
             {
@@ -176,7 +187,26 @@ namespace StoreClient
                 Padding = new Thickness(20),
                 Content = "Checkout"
             };
-            checkoutBtn.Click += BackToMainBtnClick;
+            checkoutBtn.Click += CheckoutBtnClick;
+
+            applyCouponBtn = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Width = 100,
+                Margin = new Thickness(0, 0, 0, 50),
+                Padding = new Thickness(20),
+                Content = "Apply Coupon"
+            };
+            applyCouponBtn.Click += ApplyCouponBtnClick;
+
+            couponTextBox = new TextBox
+            {
+                FontSize = 14,
+                Width = 100,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 0),
+                Padding = new Thickness(5)
+            };
 
             p.Width = windowWidth;
             p.Height = windowHeight;
@@ -185,6 +215,8 @@ namespace StoreClient
             p.Children.Add(backToMainBtn);
             p.Children.Add(cartBox);
             p.Children.Add(checkoutBtn);
+            p.Children.Add(couponTextBox);
+            p.Children.Add(cartTotalPrice);
 
             return p;
         }
@@ -211,6 +243,8 @@ namespace StoreClient
                 MessageBox.Show("No items added to cart!", "Alert");
             }
 
+            double totalCartPrice = checkoutService.Checkout(cartService.GetCart()).totalPrice;
+            cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
             SetLayout(cartPanel);
         }
 
@@ -219,6 +253,12 @@ namespace StoreClient
             SetLayout(mainPanel);
             cartBox.Items.Clear();
         }
+
+        private void ApplyCouponBtnClick(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("TODO ADD COUPON");
+        }
+
         private void ProductDoubleClick(object sender, MouseEventArgs e)
         {
             try
@@ -233,9 +273,18 @@ namespace StoreClient
             }
         }
 
-        private void CheckoutBtnClick(object sender, MouseEventArgs e)
+        private void CheckoutBtnClick(object sender, RoutedEventArgs e)
         {
-            
+            Receipt receipt = checkoutService.Checkout(cartService.GetCart());
+
+            string msg = "";
+            foreach (Cart c in receipt.products)
+            {
+                msg += $"{c.productName} - {c.price}";
+            }
+
+            MessageBox.Show(msg);
+            MessageBox.Show("Total price: " + receipt.totalPrice);
         }
 
         private void ResizeCurrentPanel()
