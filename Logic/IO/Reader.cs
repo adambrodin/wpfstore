@@ -10,18 +10,17 @@ namespace Logic.IO
 {
     public class Reader : FileHelper
     {
-        public IEnumerable<T> ReadDataFromCsv<T>(string filename)
+        public IEnumerable<T> ReadDataFromCsv<T>(string fileName)
         {
             IEnumerable<T> result;
-            using (TextReader fileReader = File.OpenText(GetFilePath(filename)))
+            using (TextReader fileReader = File.OpenText(GetProjectFilePath(fileName)))
             {
                 var csv = new CsvReader(fileReader, CultureInfo.CurrentCulture);
                 csv.Configuration.HasHeaderRecord = false;
                 csv.Read();
                 result = csv.GetRecords<T>().ToList();
+                return result;
             }
-
-            return result;
         }
     }
 }

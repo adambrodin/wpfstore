@@ -24,7 +24,7 @@ namespace Logic.IO
                         // Set position within current stream to beginning, before copying
                         ms.Seek(0, SeekOrigin.Begin);
 
-                        using (FileStream fs = new FileStream(GetFilePath(fileName), FileMode.OpenOrCreate))
+                        using (FileStream fs = new FileStream(GetProjectFilePath(fileName), FileMode.OpenOrCreate))
                         {
                             ms.CopyTo(fs);
                             fs.Flush();

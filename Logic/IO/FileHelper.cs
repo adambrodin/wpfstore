@@ -14,9 +14,14 @@ namespace Logic.IO
             return Path.Combine(tempPath, Path.GetFileName(fileName));
         }
 
+        protected static string GetProjectFilePath(string fileName)
+        {
+            return Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, Path.GetFileName(fileName));
+        }
+
         public static void DeleteFile(string fileName)
         {
-            string file = GetFilePath(fileName);
+            string file = GetProjectFilePath(fileName);
             if (File.Exists(file))
             {
                 File.Delete(file);
