@@ -10,15 +10,14 @@ namespace Logic.Services
     
     public class CartService
     {
-
         private List<Cart> _currentCart;
-
         private Reader _reader;
         private Writer _writer;
         public CartService()
         {
             this._reader = new Reader();
             this._writer = new Writer();
+            this._currentCart = new List<Cart>();
         }
         public void SaveCart()
         {

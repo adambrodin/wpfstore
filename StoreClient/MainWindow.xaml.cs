@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using Logic.Services;
 using Logic.Models;
 using System.Collections.Generic;
@@ -14,25 +13,19 @@ namespace StoreClient
     {
         private double windowWidth = 1280, windowHeight = 720;
         private List<Product> productsForSale = new List<Product>();
-        //private Product[] productsForSale = new Product[] { new Product("Ethereum", "A solid cryptocurrency", "-", 473.53), new Product("Ethereum", "A solid cryptocurrency", "-", 473.53) };
         private ProductService productService;
+        private CartService cartService;
+        private CheckoutService checkoutService;
         private ListBox productsBox, cartBox;
-        private Button cartBtn, backToMainBtn;
+        private Button cartBtn, backToMainBtn, checkoutBtn;
         private Border mainBorder;
         private StackPanel currentPanel, mainPanel, cartPanel;
-
-        private enum View
-        {
-            Main,
-            Cart,
-            Receipt
-        }
 
         public MainWindow()
         {
             InitializeComponent();
             this.productService = new ProductService { };
-
+            cartService = new CartService { };
             Start();
         }
 
@@ -41,11 +34,11 @@ namespace StoreClient
             try
             {
                 this.productsForSale = this.productService.FetchProducts();
-            } catch (IndexOutOfRangeException e)
+            }
+            catch (IndexOutOfRangeException e)
             {
                 MessageBox.Show($"Error: {e.Message}");
             }
-            
         }
 
         private void Start()
@@ -55,7 +48,7 @@ namespace StoreClient
             Width = windowWidth;
             Height = windowHeight;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.SizeChanged += OnWindowSizeChanged;
+            SizeChanged += OnWindowSizeChanged;
 
             // Element setup
             mainBorder = new Border();
@@ -132,7 +125,6 @@ namespace StoreClient
 
             return p;
         }
-
         private StackPanel CartLayout()
         {
             StackPanel p = new StackPanel()
@@ -141,7 +133,6 @@ namespace StoreClient
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Top
             };
-
             TextBlock storeText = new TextBlock
             {
                 Margin = new Thickness(10),
@@ -149,7 +140,6 @@ namespace StoreClient
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Text = "Cart"
             };
-
             TextBlock productListText = new TextBlock
             {
                 Margin = new Thickness(40, 0, 0, 0),
@@ -161,25 +151,32 @@ namespace StoreClient
             cartBox = new ListBox
             {
                 FontSize = 24,
+                Width = 250,
                 BorderBrush = Brushes.Red,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Margin = new Thickness(30, -150, 0, -300),
                 Padding = new Thickness(5)
             };
 
-            cartBox.Items.Add("Example Cart Item 1");
-            cartBox.Items.Add("Example Cart Item 2");
-            cartBox.Items.Add("Example Cart Item 3");
-
-
             backToMainBtn = new Button
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
+                Width = 75,
                 Margin = new Thickness(50),
                 Padding = new Thickness(20),
                 Content = "Back"
             };
             backToMainBtn.Click += BackToMainBtnClick;
+
+            checkoutBtn = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Width = 75,
+                Margin = new Thickness(400, 145, 50, 0),
+                Padding = new Thickness(20),
+                Content = "Checkout"
+            };
+            checkoutBtn.Click += BackToMainBtnClick;
 
             p.Width = windowWidth;
             p.Height = windowHeight;
@@ -187,6 +184,7 @@ namespace StoreClient
             p.Children.Add(productListText);
             p.Children.Add(backToMainBtn);
             p.Children.Add(cartBox);
+            p.Children.Add(checkoutBtn);
 
             return p;
         }
@@ -195,35 +193,49 @@ namespace StoreClient
         {
             foreach (Product p in productsForSale)
             {
-                productsBox.Items.Add($"{p.title} - {p.price} USD");
+                productsBox.Items.Add($"{p.title} - ${p.price}");
             }
-        }
-
-        private void AddItems()
-        {
-
         }
 
         private void CartBtnClick(object sender, RoutedEventArgs e)
         {
+            if (cartService.GetCart().Count > 0)
+            {
+                foreach (Cart c in cartService.GetCart())
+                {
+                    cartBox.Items.Add($"{c.productName} - ${c.price}");
+                }
+            }
+            else
+            {
+                MessageBox.Show("No items added to cart!", "Alert");
+            }
+
             SetLayout(cartPanel);
         }
 
         private void BackToMainBtnClick(object sender, RoutedEventArgs e)
         {
             SetLayout(mainPanel);
+            cartBox.Items.Clear();
         }
         private void ProductDoubleClick(object sender, MouseEventArgs e)
         {
             try
             {
                 Product product = productsForSale[productsBox.SelectedIndex];
-                MessageBox.Show($"You purchased 1x {product.title} for a total of ${product.price}");
+                MessageBox.Show($"You added 1x {product.title} to cart!", "Cart");
+                cartService.AddItemToCart(product);
             }
             catch
             {
                 return;
             }
+        }
+
+        private void CheckoutBtnClick(object sender, MouseEventArgs e)
+        {
+            
         }
 
         private void ResizeCurrentPanel()
@@ -236,7 +248,6 @@ namespace StoreClient
         {
             windowWidth = e.NewSize.Width;
             windowHeight = e.NewSize.Height;
-
 
             if (currentPanel != null)
             {
