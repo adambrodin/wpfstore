@@ -24,8 +24,9 @@ namespace Logic.Services
 
             var couponInformation = this._couponService.ValidateCoupon(coupon);
             
-            int discount = Convert.ToInt32(couponInformation.discount * 10.0);
-            this._receipt.discount = (int)(this._receipt.totalPrice - (this._receipt.totalPrice * discount));
+            double discount = couponInformation.discount;
+            // this._receipt.totalPrice = (int)(this._receipt.totalPrice - (this._receipt.totalPrice * discount));
+            this._receipt.totalPrice *= discount;
             this._receipt.products = items;
         }
 

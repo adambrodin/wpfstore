@@ -8,6 +8,5 @@ namespace Logic.Models
     {
         public string code;
         public double discount;
-        public bool precent;
     }
 }

@@ -217,6 +217,7 @@ namespace StoreClient
             p.Children.Add(checkoutBtn);
             p.Children.Add(couponTextBox);
             p.Children.Add(cartTotalPrice);
+            p.Children.Add(applyCouponBtn);
 
             return p;
         }
@@ -243,7 +244,7 @@ namespace StoreClient
                 MessageBox.Show("No items added to cart!", "Alert");
             }
 
-            double totalCartPrice = checkoutService.Checkout(cartService.GetCart()).totalPrice;
+            double totalCartPrice = checkoutService.Checkout(cartService.GetCart(), "50percent").totalPrice;
             cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
             SetLayout(cartPanel);
         }
@@ -275,16 +276,9 @@ namespace StoreClient
 
         private void CheckoutBtnClick(object sender, RoutedEventArgs e)
         {
-            Receipt receipt = checkoutService.Checkout(cartService.GetCart());
+            Receipt receipt = checkoutService.Checkout(cartService.GetCart(), "50percent");
 
-            string msg = "";
-            foreach (Cart c in receipt.products)
-            {
-                msg += $"{c.productName} - {c.price}";
-            }
-
-            MessageBox.Show(msg);
-            MessageBox.Show("Total price: " + receipt.totalPrice);
+            // TODO show receipt text
         }
 
         private void ResizeCurrentPanel()

@@ -14,7 +14,7 @@ namespace Logic.Services
 
         public Coupon ValidateCoupon(String coupon)
         {
-            return new Coupon { code = coupon, discount = 0.5, precent = true };
+            return new Coupon { code = coupon, discount = 0.5 };
         }
     }
 }
