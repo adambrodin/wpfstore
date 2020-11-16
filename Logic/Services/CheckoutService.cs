@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Logic.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,14 +7,26 @@ namespace Logic.Services
 {
     public class CheckoutService
     {
-        public void GenerateRecipt()
+        private Receipt _receipt = new Receipt();
+        private void GenerateRecipt(List<Cart> items)
         {
-            throw new Exception("Not implemented");
+            items.ForEach(item =>
+            {
+                this._receipt.totalPrice += item.price;
+                this._receipt.products.Add(item);
+            });
+            this._receipt.discount = 0;
         }
 
-        public void Checkout()
+        public Receipt Checkout(List<Cart> items)
         {
-            throw new Exception("Not implemented");
+            GenerateRecipt(items);
+            return this._receipt;
+        }
+
+        public void ClearReceipt()
+        {
+            this._receipt = new Receipt();
         }
     }
 }
