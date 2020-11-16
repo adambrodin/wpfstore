@@ -6,7 +6,7 @@ namespace Logic.Models
 {
     public class Receipt
     {
-        public List<Product> products;
+        public List<Cart> products;
         public double totalPrice;
         public int discount;
     }
