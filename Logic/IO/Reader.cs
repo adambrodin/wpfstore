@@ -15,7 +15,7 @@ namespace Logic.IO
             IEnumerable<T> result;
             using (TextReader fileReader = File.OpenText(GetProjectFilePath(fileName)))
             {
-                var csv = new CsvReader(fileReader, CultureInfo.CurrentCulture);
+                var csv = new CsvReader(fileReader, csvConfig);
                 csv.Configuration.HasHeaderRecord = false;
                 csv.Read();
                 result = csv.GetRecords<T>().ToList();
