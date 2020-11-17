@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,8 +9,8 @@ namespace Logic.IO
 {
     public class Writer : FileHelper
     {
-        
 
+        
         public void WriteDataToCsv(IEnumerable<object> data, string fileName)
         {
             Console.WriteLine(GetFilePath(fileName));
@@ -17,7 +18,7 @@ namespace Logic.IO
             {
                 using (var writer = new StreamWriter(ms))
                 {
-                    using (var csvWriter = new CsvWriter(writer, CultureInfo.CurrentCulture))
+                    using (var csvWriter = new CsvWriter(writer, csvConfig))
                     {
                         csvWriter.WriteRecords(data);
                         writer.Flush();

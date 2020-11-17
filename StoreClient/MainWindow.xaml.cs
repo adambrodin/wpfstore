@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -25,6 +26,7 @@ namespace StoreClient
 
         public MainWindow()
         {
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             InitializeComponent();
             this.productService = new ProductService { };
             cartService = new CartService { };

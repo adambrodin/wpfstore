@@ -11,10 +11,11 @@ namespace Logic.IO.Tests
     [TestClass]
     public class WriterTests
     {
+        private string testfile = "product_test.csv";
         [TestMethod]
         public void WriteDataToCsvTest_ValidProductData_SucceedToWriteCsv()
         {
-            string testfile = "product_test.csv";
+            
 
             var list = new List<Product>()
             {
@@ -31,5 +32,7 @@ namespace Logic.IO.Tests
 
             Assert.AreEqual(list.Count, output.Count());
         }
+
+        
     }
 }

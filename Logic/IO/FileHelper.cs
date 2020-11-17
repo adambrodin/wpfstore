@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-
+using CsvHelper.Configuration;
 namespace Logic.IO
 {
     public class FileHelper
     {
+
+        protected CsvConfiguration csvConfig = new CsvConfiguration{ 
+                    Delimiter = ";"}
         protected static string GetFilePath(string fileName)
         {
             string tempPath = Path.GetTempPath();
