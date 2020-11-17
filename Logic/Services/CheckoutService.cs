@@ -24,7 +24,7 @@ namespace Logic.Services
 
             var couponInformation = this._couponService.ValidateCoupon(coupon);
             
-            double discount = couponInformation.discount;
+            double discount = couponInformation.discount * 10;
             // this._receipt.totalPrice = (int)(this._receipt.totalPrice - (this._receipt.totalPrice * discount));
             this._receipt.totalPrice *= discount;
             this._receipt.products = items;
