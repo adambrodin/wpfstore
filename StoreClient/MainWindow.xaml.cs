@@ -6,6 +6,7 @@ using System.Windows.Media;
 using Logic.Services;
 using Logic.Models;
 using System.Collections.Generic;
+using System.Windows.Media.Imaging;
 
 namespace StoreClient
 {
@@ -16,12 +17,16 @@ namespace StoreClient
         private ProductService productService;
         private CartService cartService;
         private CheckoutService checkoutService;
-        private ListBox productsBox, cartBox;
-        private TextBlock cartTotalPrice;
+        private CouponService couponService;
+        private bool couponApplied;
+        private Image currencyImage;
+        private ListView productsBox, cartBox;
+        private TextBlock cartTotalPrice, currencyCostText, currencyDescriptionText;
         private TextBox couponTextBox;
-        private Button cartBtn, backToMainBtn, checkoutBtn, applyCouponBtn;
+        private Button cartBtn, backToMainBtn, checkoutBtn, applyCouponBtn, addToCartBtn;
         private Border mainBorder;
         private StackPanel currentPanel, mainPanel, cartPanel;
+        private double totalCartPrice;
 
         public MainWindow()
         {
@@ -29,6 +34,7 @@ namespace StoreClient
             this.productService = new ProductService { };
             cartService = new CartService { };
             checkoutService = new CheckoutService { };
+            couponService = new CouponService { };
             Start();
         }
 
@@ -99,25 +105,68 @@ namespace StoreClient
                 Text = "Available cryptocurrencies"
             };
 
-            productsBox = new ListBox
+            productsBox = new ListView
             {
                 FontSize = 24,
+                Width = 250,
                 BorderBrush = Brushes.Red,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = new Thickness(30, -150, 0, -300),
+                Margin = new Thickness(30, -100, 0, -300),
                 Padding = new Thickness(5)
             };
-            productsBox.MouseDoubleClick += ProductDoubleClick;
+            productsBox.SelectionChanged += ProductSelectionChanged;
+
             SetupProductList();
 
             cartBtn = new Button
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = new Thickness(50),
-                Padding = new Thickness(20),
+                Padding = new Thickness(5),
                 Content = "Show Cart"
             };
             cartBtn.Click += CartBtnClick;
+
+            addToCartBtn = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Width = 75,
+                Height = 25,
+                Margin = new Thickness(0, 0, 0, 0),
+                Padding = new Thickness(5),
+                Content = "Add to cart"
+            };
+            addToCartBtn.Click += AddToCartBtnClick;
+
+            currencyImage = new Image
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                MaxWidth = 256,
+                MaxHeight = 256,
+                Width = 256,
+                Height = 256,
+                Margin = new Thickness(0, -150, 0, 0),
+                Visibility = Visibility.Hidden,
+            };
+            currencyCostText = new TextBlock
+            {
+                Margin = new Thickness(0, -160, 0, 0),
+                FontSize = 20,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Text = "$100"
+            };
+
+            currencyDescriptionText = new TextBlock
+            {
+                Margin = new Thickness(0, 35, 0, 0),
+                MaxWidth = 500,
+                TextAlignment = TextAlignment.Center,
+                FontSize = 20,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextWrapping = TextWrapping.Wrap,
+                Text = "A description"
+            };
 
             p.Width = windowWidth;
             p.Height = windowHeight;
@@ -125,6 +174,10 @@ namespace StoreClient
             p.Children.Add(productListText);
             p.Children.Add(cartBtn);
             p.Children.Add(productsBox);
+            p.Children.Add(currencyCostText);
+            p.Children.Add(currencyImage);
+            p.Children.Add(addToCartBtn);
+            p.Children.Add(currencyDescriptionText);
 
             return p;
         }
@@ -159,7 +212,7 @@ namespace StoreClient
                 Text = "Total price: $0"
             };
 
-            cartBox = new ListBox
+            cartBox = new ListView
             {
                 FontSize = 24,
                 Width = 250,
@@ -174,7 +227,7 @@ namespace StoreClient
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Width = 75,
                 Margin = new Thickness(50),
-                Padding = new Thickness(20),
+                Padding = new Thickness(5),
                 Content = "Back"
             };
             backToMainBtn.Click += BackToMainBtnClick;
@@ -184,7 +237,7 @@ namespace StoreClient
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Width = 75,
                 Margin = new Thickness(400, 145, 50, 0),
-                Padding = new Thickness(20),
+                Padding = new Thickness(5),
                 Content = "Checkout"
             };
             checkoutBtn.Click += CheckoutBtnClick;
@@ -194,7 +247,7 @@ namespace StoreClient
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Width = 100,
                 Margin = new Thickness(0, 0, 0, 50),
-                Padding = new Thickness(20),
+                Padding = new Thickness(5),
                 Content = "Apply Coupon"
             };
             applyCouponBtn.Click += ApplyCouponBtnClick;
@@ -226,7 +279,26 @@ namespace StoreClient
         {
             foreach (Product p in productsForSale)
             {
-                productsBox.Items.Add($"{p.title} - ${p.price}");
+                productsBox.Items.Add($"{p.title}");
+            }
+        }
+
+        private void ProductSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (currencyImage.Visibility == Visibility.Hidden)
+            {
+                currencyImage.Visibility = Visibility.Visible;
+            }
+
+            try
+            {
+                currencyImage.Source = new BitmapImage(new Uri(Logic.IO.FileHelper.GetProjectFilePath(productsForSale[productsBox.SelectedIndex].imagePath)));
+                currencyCostText.Text = $"${productsForSale[productsBox.SelectedIndex].price}";
+                currencyDescriptionText.Text = $"{productsForSale[productsBox.SelectedIndex].description}";
+            }
+            catch
+            {
+                MessageBox.Show("Failed to load image, no image found!");
             }
         }
 
@@ -244,7 +316,7 @@ namespace StoreClient
                 MessageBox.Show("No items added to cart!", "Alert");
             }
 
-            double totalCartPrice = checkoutService.Checkout(cartService.GetCart(), "50percent").totalPrice;
+            totalCartPrice = checkoutService.Checkout(cartService.GetCart(), "asd").totalPrice;
             cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
             SetLayout(cartPanel);
         }
@@ -253,14 +325,30 @@ namespace StoreClient
         {
             SetLayout(mainPanel);
             cartBox.Items.Clear();
+            checkoutService.ClearReceipt();
         }
 
         private void ApplyCouponBtnClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("TODO ADD COUPON");
+            Coupon coupon = couponService.ValidateCoupon(couponTextBox.Text);
+            if (coupon == null)
+            {
+                MessageBox.Show("Coupon not found!");
+                return;
+            }
+
+            if (couponApplied)
+            {
+                MessageBox.Show("A coupon has already been applied!");
+                return;
+            }
+
+            couponApplied = true;
+            totalCartPrice *= coupon.discount;
+            cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
         }
 
-        private void ProductDoubleClick(object sender, MouseEventArgs e)
+        private void AddToCartBtnClick(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -276,8 +364,9 @@ namespace StoreClient
 
         private void CheckoutBtnClick(object sender, RoutedEventArgs e)
         {
-            Receipt receipt = checkoutService.Checkout(cartService.GetCart(), "50percent");
+            Receipt receipt = checkoutService.Checkout(cartService.GetCart());
 
+            receipt.products.ForEach(c => MessageBox.Show(c.productName + c.price));
             // TODO show receipt text
         }
 

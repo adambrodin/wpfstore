@@ -11,6 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreClient", "StoreClient\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presets", "Presets", "{9CBA6AED-7060-4943-A213-A1462E8DB12D}"
 	ProjectSection(SolutionItems) = preProject
+		coupons.csv = coupons.csv
 		products.csv = products.csv
 	EndProjectSection
 EndProject

@@ -1,20 +1,28 @@
-﻿using Logic.Models;
+﻿using Logic.IO;
+using Logic.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Logic.Services
 {
     public class CouponService
     {
+        private Reader reader;
+        private List<Coupon> availableCoupons;
+        public CouponService()
+        {
+            reader = new Reader();
+            availableCoupons = reader.ReadDataFromCsv<Coupon>("coupons.csv").ToList();
+        }
         public void GenerateCoupon()
         {
             throw new Exception("Not implemented");
         }
 
-        public Coupon ValidateCoupon(String coupon)
+        public Coupon ValidateCoupon(String code)
         {
-            return new Coupon { code = coupon, discount = 0.5 };
+            return availableCoupons.Where(c => c.code == code).FirstOrDefault();
         }
     }
 }

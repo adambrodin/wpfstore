@@ -8,8 +8,6 @@ namespace Logic.IO
 {
     public class Writer : FileHelper
     {
-        
-
         public void WriteDataToCsv(IEnumerable<object> data, string fileName)
         {
             Console.WriteLine(GetFilePath(fileName));

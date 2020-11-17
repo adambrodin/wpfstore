@@ -6,7 +6,7 @@ namespace Logic.Models
 {
     public class Coupon
     {
-        public string code;
-        public double discount;
+        public string code { get; set; }
+        public double discount { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace Logic.Services
             this._couponService = new CouponService();
             this._receipt = new Receipt();
         }
-        private void GenerateRecipt(List<Cart> items, string coupon)
+        private void GenerateReceipt(List<Cart> items, string coupon)
         {
             items.ForEach(item =>
             {
@@ -23,16 +23,17 @@ namespace Logic.Services
             });
 
             var couponInformation = this._couponService.ValidateCoupon(coupon);
-            
-            double discount = couponInformation.discount * 10;
-            // this._receipt.totalPrice = (int)(this._receipt.totalPrice - (this._receipt.totalPrice * discount));
-            this._receipt.totalPrice *= discount;
+            if (couponInformation != null)
+            {
+                double discount = couponInformation.discount * 10;
+                this._receipt.totalPrice *= discount;
+            }
             this._receipt.products = items;
         }
 
-        public Receipt Checkout(List<Cart> items, String coupon)
+        public Receipt Checkout(List<Cart> items, String coupon = "")
         {
-            GenerateRecipt(items, coupon);
+            GenerateReceipt(items, coupon);
             return this._receipt;
         }
 
