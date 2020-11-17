@@ -1,7 +1,7 @@
-title;description;imagePath;price
-Bitcoin;The original, first-ever cryptocurrency out there.;images\bitcoin.png;16945,04
-BAT;BAT, also known as Basic Attention Token is a digital currency linked to advertising on the web.;images\basicattentiontoken.png;0,205091
-Dogecoin;A litecoin based cryptocurrency for the memes.;images\dogecoin.png;0,002904
-Ethereum;The second largest cryptocurrency to date which works via a decentralized virtual machine to execute scripts on international nodes.;images\ethereum.png;463,73
-Monero;A cryptocurrency that focuses on fungibility, privacy and decentralization.;images\monero.png;118,76
-Trumpcoin;A coin for patriots.;images\trumpcoin.png;0,014874
+title,description,imagePath,price
+Bitcoin,The original first-ever cryptocurrency out there.,images\bitcoin.png,16945.04
+BAT,BAT also known as Basic Attention Token is a digital currency linked to advertising on the web.,images\basicattentiontoken.png,0.205091
+Dogecoin,A litecoin based cryptocurrency for the memes.,images\dogecoin.png,0.002904
+Ethereum,The second largest cryptocurrency to date which works via a decentralized virtual machine to execute scripts on international nodes.,images\ethereum.png,463.73
+Monero,A cryptocurrency that focuses on fungibility privacy and decentralization.,images\monero.png,118.76
+Trumpcoin,A coin for patriots.,images\trumpcoin.png,0.014874

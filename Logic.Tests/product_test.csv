@@ -1,4 +1,4 @@
-title,description,imagePath,price
-Bitcoin,Krypto valuta,NULL,492132
-Etherium,Krypto valuta,NULL,4213
-Kappacoin,Krypto valuta,NULL,4921
+title;description;imagePath;price
+Bitcoin;Krypto valuta;NULL;492132
+Etherium;Krypto valuta;NULL;4213
+Kappacoin;Krypto valuta;NULL;4921

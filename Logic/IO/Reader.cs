@@ -1,10 +1,7 @@
 ﻿using CsvHelper;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Logic.IO
 {
@@ -13,9 +10,10 @@ namespace Logic.IO
         public IEnumerable<T> ReadDataFromCsv<T>(string fileName)
         {
             IEnumerable<T> result;
+            var x = GetProjectFilePath(fileName);
             using (TextReader fileReader = File.OpenText(GetProjectFilePath(fileName)))
             {
-                var csv = new CsvReader(fileReader, csvConfig);
+                var csv = new CsvReader(fileReader, System.Globalization.CultureInfo.CurrentCulture);
                 csv.Configuration.HasHeaderRecord = false;
                 csv.Read();
                 result = csv.GetRecords<T>().ToList();
