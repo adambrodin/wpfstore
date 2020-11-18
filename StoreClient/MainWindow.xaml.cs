@@ -7,6 +7,8 @@ using Logic.Services;
 using Logic.Models;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
+using System.ComponentModel;
+using System.Windows.Input;
 
 namespace StoreClient
 {
@@ -226,6 +228,11 @@ namespace StoreClient
                 Padding = new Thickness(1)
             };
 
+            ContextMenu contextMenu = new ContextMenu();
+            contextMenu.Items.Add("Remove");
+            contextMenu.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(RemoveCartItem));
+            cartBox.ContextMenu = contextMenu;
+
             backToMainBtn = new Button
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
@@ -319,6 +326,11 @@ namespace StoreClient
             }
         }
 
+        private void RemoveCartItem(object sender, RoutedEventArgs e)
+        {
+            cartBox.Items.Remove(cartBox.SelectedItem);
+        }
+
         private void ProductSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (currencyImage.Visibility == Visibility.Hidden)
@@ -348,7 +360,7 @@ namespace StoreClient
                 }
             }
 
-            totalCartPrice = checkoutService.Checkout(cartService.GetCart(), "asd").totalPrice;
+            totalCartPrice = checkoutService.Checkout(cartService.GetCart(), "asd").totalPrice; // Price is not rounded to 2 decimals because of the low price of some cryptocurrencies
             cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
             SetLayout(cartPanel);
         }
