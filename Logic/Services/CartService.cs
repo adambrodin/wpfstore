@@ -26,8 +26,9 @@ namespace Logic.Services
 
         public List<Product> LoadCart()
         {
-            var cart = this._reader.ReadDataFromCsv<Product>("saved_cart.csv");
-            if (cart.Any())
+            this.ClearCart();
+            this._currentCart = this._reader.ReadDataFromCsv<Product>("saved_cart.csv").ToList();
+            if (!this._currentCart.Any())
             {
                 throw new IndexOutOfRangeException("Could not load saved cart");
             }
