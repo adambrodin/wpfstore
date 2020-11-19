@@ -24,5 +24,16 @@ namespace Logic.Services
         {
             return availableCoupons.Where(c => c.code == code).FirstOrDefault();
         }
+
+        public List<Coupon> FetchCoupons()
+        {
+            var coupons = this.reader.ReadDataFromCsv<Coupon>("coupons.csv");
+            if (!coupons.Any())
+            {
+                throw new IndexOutOfRangeException("No coupons found");
+            }
+
+            return coupons.ToList();
+        }
     }
 }
