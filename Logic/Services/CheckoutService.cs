@@ -15,7 +15,7 @@ namespace Logic.Services
             this._couponService = new CouponService();
             this._receipt = new Receipt();
         }
-        private void GenerateReceipt(List<Cart> items, string coupon)
+        private void GenerateReceipt(List<Product> items, string coupon)
         {
             items.ForEach(item =>
             {
@@ -31,7 +31,7 @@ namespace Logic.Services
             this._receipt.products = items;
         }
 
-        public Receipt Checkout(List<Cart> items, String coupon = "")
+        public Receipt Checkout(List<Product> items, String coupon = "")
         {
             GenerateReceipt(items, coupon);
             return this._receipt;

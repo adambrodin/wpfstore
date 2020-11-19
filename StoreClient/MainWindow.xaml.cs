@@ -20,7 +20,7 @@ namespace StoreClient
         private CartService cartService;
         private CheckoutService checkoutService;
         private CouponService couponService;
-        private bool couponApplied;
+        private Coupon appliedCoupon;
         private Image currencyImage;
         private ListView productsBox, cartBox;
         private TextBlock cartTotalPrice, currencyCostText, currencyDescriptionText;
@@ -34,7 +34,7 @@ namespace StoreClient
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
             InitializeComponent();
-            this.productService = new ProductService { };
+            productService = new ProductService { };
             cartService = new CartService { };
             checkoutService = new CheckoutService { };
             couponService = new CouponService { };
@@ -45,7 +45,7 @@ namespace StoreClient
         {
             try
             {
-                this.productsForSale = this.productService.FetchProducts();
+                productsForSale = productService.FetchProducts();
             }
             catch (IndexOutOfRangeException e)
             {
@@ -117,7 +117,7 @@ namespace StoreClient
                 BorderBrush = Brushes.Red,
                 HorizontalContentAlignment = HorizontalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = new Thickness(30, -100, 0, -300),
+                Margin = new Thickness(30, 50, 0, 0),
                 Padding = new Thickness(5)
             };
             productsBox.SelectionChanged += ProductSelectionChanged;
@@ -127,7 +127,9 @@ namespace StoreClient
             cartBtn = new Button
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(50),
+                Width = 125,
+                Height = 75,
+                Margin = new Thickness(0, -97, 25, 0),
                 Padding = new Thickness(5),
                 Content = "Show Cart"
             };
@@ -140,6 +142,7 @@ namespace StoreClient
                 Height = 25,
                 Margin = new Thickness(0, 0, 0, 0),
                 Padding = new Thickness(5),
+                Visibility = Visibility.Hidden,
                 Content = "Add to cart"
             };
             addToCartBtn.Click += AddToCartBtnClick;
@@ -151,25 +154,27 @@ namespace StoreClient
                 MaxHeight = 256,
                 Width = 256,
                 Height = 256,
-                Margin = new Thickness(0, -150, 0, 0),
+                Margin = new Thickness(0, -250, 0, 0),
                 Visibility = Visibility.Hidden,
             };
             currencyCostText = new TextBlock
             {
-                Margin = new Thickness(0, -160, 0, 0),
+                Margin = new Thickness(0, -275, 0, 0),
                 FontSize = 20,
                 HorizontalAlignment = HorizontalAlignment.Center,
+                Visibility = Visibility.Hidden,
                 Text = "$100"
             };
 
             currencyDescriptionText = new TextBlock
             {
-                Margin = new Thickness(0, 35, 0, 0),
+                Margin = new Thickness(0, 25, 0, 0),
                 MaxWidth = 500,
                 TextAlignment = TextAlignment.Center,
                 FontSize = 20,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextWrapping = TextWrapping.Wrap,
+                Visibility = Visibility.Hidden,
                 Text = "A description"
             };
 
@@ -326,9 +331,23 @@ namespace StoreClient
             }
         }
 
+        private void UpdatePrice()
+        {
+            totalCartPrice = 0;
+            cartService.GetCart().ForEach(product => totalCartPrice += product.price);
+
+            if (appliedCoupon != null)
+            {
+                totalCartPrice *= appliedCoupon.discount;
+            }
+            cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
+        }
+
         private void RemoveCartItem(object sender, RoutedEventArgs e)
         {
+            cartService.RemoveItemFromCart(cartBox.SelectedIndex);
             cartBox.Items.Remove(cartBox.SelectedItem);
+            UpdatePrice();
         }
 
         private void ProductSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -336,6 +355,9 @@ namespace StoreClient
             if (currencyImage.Visibility == Visibility.Hidden)
             {
                 currencyImage.Visibility = Visibility.Visible;
+                currencyCostText.Visibility = Visibility.Visible;
+                currencyDescriptionText.Visibility = Visibility.Visible;
+                addToCartBtn.Visibility = Visibility.Visible;
             }
 
             try
@@ -354,14 +376,13 @@ namespace StoreClient
         {
             if (cartService.GetCart().Count > 0)
             {
-                foreach (Cart c in cartService.GetCart())
+                foreach (Product p in cartService.GetCart())
                 {
-                    cartBox.Items.Add($"{c.productName} - ${c.price}");
+                    cartBox.Items.Add($"{p.title} - ${p.price}");
                 }
+                UpdatePrice();
             }
 
-            totalCartPrice = checkoutService.Checkout(cartService.GetCart(), "asd").totalPrice; // Price is not rounded to 2 decimals because of the low price of some cryptocurrencies
-            cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
             SetLayout(cartPanel);
         }
 
@@ -374,13 +395,14 @@ namespace StoreClient
 
         private void LoadCartBtnClick(object sender, RoutedEventArgs e)
         {
-            // TODO LOAD SAVED CART
+            cartService.LoadCart();
         }
 
         private void ClearCartBtnClick(object sender, RoutedEventArgs e)
         {
             cartService.ClearCart();
-            productsBox.Items.Clear();
+            cartBox.Items.Clear();
+            UpdatePrice();
             MessageBox.Show("Cart cleared!");
         }
 
@@ -393,13 +415,13 @@ namespace StoreClient
                 return;
             }
 
-            if (couponApplied)
+            if (coupon == appliedCoupon)
             {
-                MessageBox.Show("A coupon has already been applied!");
+                MessageBox.Show("Coupon already applied!");
                 return;
             }
 
-            couponApplied = true;
+            appliedCoupon = coupon;
             totalCartPrice *= coupon.discount;
             cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
             MessageBox.Show("Coupon applied!");

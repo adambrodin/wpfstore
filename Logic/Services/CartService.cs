@@ -10,23 +10,23 @@ namespace Logic.Services
     
     public class CartService
     {
-        private List<Cart> _currentCart;
+        private List<Product> _currentCart;
         private Reader _reader;
         private Writer _writer;
         public CartService()
         {
             this._reader = new Reader();
             this._writer = new Writer();
-            this._currentCart = new List<Cart>();
+            this._currentCart = new List<Product>();
         }
         public void SaveCart()
         {
             this._writer.WriteDataToCsv(this._currentCart, "saved_cart.csv");
         }
 
-        public List<Cart> LoadCart()
+        public List<Product> LoadCart()
         {
-            var cart = this._reader.ReadDataFromCsv<Cart>("saved_cart.csv");
+            var cart = this._reader.ReadDataFromCsv<Product>("saved_cart.csv");
             if (cart.Any())
             {
                 throw new IndexOutOfRangeException("Could not load saved cart");
@@ -35,7 +35,7 @@ namespace Logic.Services
             return this._currentCart;
         }
 
-        public List<Cart> GetCart()
+        public List<Product> GetCart() 
         {
             return this._currentCart;
         }
@@ -45,16 +45,14 @@ namespace Logic.Services
             this._currentCart.Clear();
         }
 
-        public void RemoveItemFromCart(Cart item)
+        public void RemoveItemFromCart(int index)
         {
-            this._currentCart.Remove(item);
+            this._currentCart.RemoveAt(index);
         }
 
-        public List<Cart> AddItemToCart(Product product)
+        public List<Product> AddItemToCart(Product product)
         {
-            var item = new Cart { productName = product.title, price = product.price };
-            this._currentCart.Add(item);
-
+            this._currentCart.Add(product);
             return this.GetCart();
         }
     }
