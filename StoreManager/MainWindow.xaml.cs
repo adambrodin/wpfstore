@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Logic.Models;
 using Logic.Services;
+using Logic.IO;
 using Microsoft.Win32;
 
 namespace StoreManager
@@ -19,10 +20,9 @@ namespace StoreManager
         private CouponService couponService;
         private StackPanel stackPanel;
         private ListBox productsBox, couponBox;
-        private TextBlock productsText, couponsText;
         private TextBox couponNameBox, couponDiscountBox, productNameBox, productDescriptionBox, productPriceBox;
         private Border border;
-        private Button addCouponBtn, addImageBtn, addProductBtn;
+        private Button addCouponBtn, addImageBtn, addProductBtn, saveBtn;
         private string newImagePath;
         private double windowWidth = 1280, windowHeight = 720;
         private static readonly Regex allowedDiscountFilter = new Regex("[^0-9.-]+");
@@ -92,6 +92,7 @@ namespace StoreManager
                 Height = 400,
                 Margin = new Thickness(25, 100, 0, 0)
             };
+
             ContextMenu productMenu = new ContextMenu();
             productMenu.Items.Add("Remove product");
             productMenu.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(RemoveProductItem));
@@ -110,22 +111,6 @@ namespace StoreManager
             couponMenu.Items.Add("Remove coupon");
             couponMenu.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(RemoveCouponItem));
             couponBox.ContextMenu = couponMenu;
-
-            productsText = new TextBlock
-            {
-                HorizontalAlignment = HorizontalAlignment.Left,
-                FontSize = 30,
-                Text = "Products",
-                Margin = new Thickness(25, -300, 0, 0)
-            };
-
-            couponsText = new TextBlock
-            {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                FontSize = 30,
-                Text = "Coupons",
-                Margin = new Thickness(400, -300, 0, 0)
-            };
 
             couponNameBox = new TextBox
             {
@@ -205,6 +190,16 @@ namespace StoreManager
             };
             addProductBtn.Click += AddProductBtnClick;
 
+            saveBtn = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Width = 100,
+                Height = 50,
+                Margin = new Thickness(225, -50, 0, 0),
+                Content = "Save store"
+            };
+            saveBtn.Click += SaveBtnClick;
+
             p.Children.Add(productsBox);
             p.Children.Add(couponBox);
             p.Children.Add(couponNameBox);
@@ -215,9 +210,16 @@ namespace StoreManager
             p.Children.Add(productPriceBox);
             p.Children.Add(addImageBtn);
             p.Children.Add(addProductBtn);
-            //p.Children.Add(productsText);
-            //p.Children.Add(couponsText);
+            p.Children.Add(saveBtn);
             return p;
+        }
+
+        private void SaveBtnClick(object sender, RoutedEventArgs e)
+        {
+            Writer writer = new Writer();
+            writer.WriteDataToCsvTemp(products, "products.csv");
+            writer.WriteDataToCsv(coupons, "coupons.csv");
+            MessageBox.Show("Store saved!");
         }
 
         private void AddImageBtnClick(object sender, RoutedEventArgs e)
@@ -247,9 +249,9 @@ namespace StoreManager
 
         private void AddCouponBtnClick(object sender, RoutedEventArgs e)
         {
-            Coupon c = new Coupon(couponNameBox.Text, double.Parse(couponDiscountBox.Text));
+            Coupon c = new Coupon(couponNameBox.Text, double.Parse(couponDiscountBox.Text) / 100);
             coupons.Add(c);
-            couponBox.Items.Add($"{c.code} - {c.discount}%");
+            couponBox.Items.Add($"{c.code} - {c.discount * 100}%");
         }
 
         private void DiscountBoxVerifier(object sender, TextCompositionEventArgs e)

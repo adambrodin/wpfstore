@@ -351,7 +351,7 @@ namespace StoreClient
 
             if (appliedCoupon != null)
             {
-                totalCartPrice *= appliedCoupon.discount;
+                totalCartPrice = totalCartPrice - (totalCartPrice * appliedCoupon.discount);
             }
             cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
         }
@@ -393,7 +393,7 @@ namespace StoreClient
                 {
                     cartBox.Items.Add($"{p.title} - ${p.price}");
                 });
-                
+
                 UpdatePrice();
             }
 
@@ -445,8 +445,7 @@ namespace StoreClient
             }
 
             appliedCoupon = coupon;
-            totalCartPrice *= coupon.discount;
-            cartTotalPrice.Text = $"Total price: ${totalCartPrice}";
+            UpdatePrice();
             MessageBox.Show("Coupon applied!");
         }
 

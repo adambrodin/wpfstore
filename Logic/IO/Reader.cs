@@ -9,9 +9,13 @@ namespace Logic.IO
     {
         public IEnumerable<T> Read<T>(string path)
         {
-            IEnumerable<T> result;
-            var x = GetProjectFilePath(path);
-            using (TextReader fileReader = File.OpenText(GetProjectFilePath(path)))
+            IEnumerable<T> result = Enumerable.Empty<T>();
+            if(!File.Exists(path))
+            {
+                return result;
+            }
+
+            using (TextReader fileReader = File.OpenText(path))
             {
                 var csv = new CsvReader(fileReader, System.Globalization.CultureInfo.CurrentCulture);
                 csv.Configuration.HasHeaderRecord = false;
