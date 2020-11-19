@@ -13,9 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presets", "Presets", "{9CBA
 	ProjectSection(SolutionItems) = preProject
 		coupons.csv = coupons.csv
 		products.csv = products.csv
+		saved_cart.csv = saved_cart.csv
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreManagerClient", "StoreManagerClient\StoreManagerClient.csproj", "{98BCA03B-E583-45A5-BA9E-9FC3089CE3D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoreManagerClient", "StoreManagerClient\StoreManagerClient.csproj", "{98BCA03B-E583-45A5-BA9E-9FC3089CE3D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
