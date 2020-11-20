@@ -18,13 +18,21 @@ namespace Logic.Services
 
         public List<Product> FetchProducts()
         {
-            var products = this._reader.ReadDataFromCsv<Product>("products.csv");
-            if (!products.Any())
+            IEnumerable<Product> products;
+
+            products = this._reader.ReadDataFromCsvTemp<Product>("products.csv");
+            if (products.Any())
             {
-                throw new IndexOutOfRangeException("No products found");
+                return products.ToList();
             }
 
-            return products.ToList();
+            products = this._reader.ReadDataFromCsv<Product>("products.csv");
+            if (products.Any())
+            {
+                return products.ToList();
+            }
+
+            throw new IndexOutOfRangeException("No products found");
         }
     }
 }

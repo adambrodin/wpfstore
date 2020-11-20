@@ -9,21 +9,21 @@ namespace Logic.IO
 {
     public class Writer : FileHelper
     {
-        public void WriteDataToCsv(IEnumerable<object> data, string fileName)
+
+        public void Write(IEnumerable<object> data, string path)
         {
-            Console.WriteLine(GetFilePath(fileName));
             using (var ms = new MemoryStream())
             {
                 using (var writer = new StreamWriter(ms))
                 {
-                    using (var csvWriter = new CsvWriter(writer, System.Globalization.CultureInfo.InvariantCulture))
+                    using (var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
                     {
                         csvWriter.WriteRecords(data);
                         writer.Flush();
-                        // Set position within current stream to beginning, before copying
+                       
                         ms.Seek(0, SeekOrigin.Begin);
 
-                        using (FileStream fs = new FileStream(GetProjectFilePath(fileName), FileMode.OpenOrCreate))
+                        using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
                         {
                             ms.CopyTo(fs);
                             fs.Flush();
@@ -31,6 +31,15 @@ namespace Logic.IO
                     }
                 }
             }
+        }
+        public void WriteDataToCsv(IEnumerable<object> data, string filename)
+        {
+            Write(data, GetProjectFilePath(filename));
+        }
+
+        public void WriteDataToCsvTemp(IEnumerable<object> data, string filename)
+        {
+            Write(data, GetTempFileLocation(filename));
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Logic.IO
 {
     public class FileHelper
     {
-        public static string GetFilePath(string fileName)
+        public static string GetTempFileLocation(string fileName)
         {
             string tempPath = Path.GetTempPath();
             return Path.Combine(tempPath, Path.GetFileName(fileName));
