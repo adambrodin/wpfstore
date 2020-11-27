@@ -7,8 +7,6 @@ using Logic.Services;
 using Logic.Models;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
-using System.ComponentModel;
-using System.Windows.Input;
 
 namespace StoreClient
 {
@@ -23,7 +21,7 @@ namespace StoreClient
         private Coupon appliedCoupon;
         private Image currencyImage;
         private ListView productsBox, cartBox;
-        private TextBlock cartTotalPrice, currencyCostText, currencyDescriptionText;
+        private TextBlock cartTotalPrice, currencyCostText, currencyDescriptionText, receiptText;
         private TextBox couponTextBox;
         private Button cartBtn, backToMainBtn, checkoutBtn, applyCouponBtn, addToCartBtn, loadCartBtn, SaveCartBtn, clearCartBtn;
         private Border mainBorder;
@@ -331,9 +329,23 @@ namespace StoreClient
         }
         private StackPanel ReceiptLayout()
         {
-            StackPanel p = new StackPanel();
+            StackPanel p = new StackPanel()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top,
+                Background = Brushes.DarkKhaki
+            };
 
+            receiptText = new TextBlock()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Width = 1000,
+                Height = 600,
+                FontSize = 30,
+                Foreground = Brushes.White
+            };
 
+            p.Children.Add(receiptText);
             return p;
         }
         private void SetupProductList()
@@ -409,8 +421,14 @@ namespace StoreClient
 
         private void SaveCartBtnClick(object sender, RoutedEventArgs e)
         {
-            cartService.SaveCart();
-            MessageBox.Show("Saved current cart.", "Cart");
+            if (cartBox.Items.Count > 0)
+            {
+                cartService.SaveCart();
+                MessageBox.Show("Saved current cart.", "Cart");
+                return;
+            }
+
+            MessageBox.Show("No items in cart!");
         }
 
         private void LoadCartBtnClick(object sender, RoutedEventArgs e)
@@ -471,7 +489,26 @@ namespace StoreClient
                 return;
             }
 
-            Receipt receipt = checkoutService.Checkout(cartService.GetCart());
+            Receipt receipt;
+            if (appliedCoupon == null)
+            {
+
+                receipt = checkoutService.Checkout(cartService.GetCart());
+            }
+            else
+            {
+                receipt = checkoutService.Checkout(cartService.GetCart(), appliedCoupon.code);
+            }
+            string receiptMessage = "";
+            foreach (Product p in receipt.products)
+            {
+                receiptMessage += $"\n{p.title} - ${p.price}".ToUpper();
+            }
+
+            receiptMessage += $"\n\nTOTAL DISCOUNT: {receipt.discount}% - ${receipt.totalPrice - totalCartPrice}";
+            receiptMessage += $"\nTOTAL PRICE: ${totalCartPrice}";
+            receiptText.Text = receiptMessage;
+
             SetLayout(receiptPanel);
         }
 

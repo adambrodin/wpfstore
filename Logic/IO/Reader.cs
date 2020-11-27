@@ -18,6 +18,7 @@ namespace Logic.IO
             using (TextReader fileReader = File.OpenText(path))
             {
                 var csv = new CsvReader(fileReader, System.Globalization.CultureInfo.CurrentCulture);
+
                 csv.Configuration.HasHeaderRecord = false;
                 csv.Read();
                 result = csv.GetRecords<T>().ToList();

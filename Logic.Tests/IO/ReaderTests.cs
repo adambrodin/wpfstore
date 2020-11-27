@@ -25,20 +25,20 @@ namespace Logic.IO.Tests
             };
 
             Writer writer = new Writer();
-            writer.WriteDataToCsv(list, _filename);
+            writer.WriteDataToCsvTemp(list, _filename);
         }
 
         [TestCleanup]
         public void Cleanup()
         {
-            FileHelper.DeleteFile(_filename);
+            FileHelper.DeleteTempFile(_filename);
         }
 
         [TestMethod]
         public void ReadDataFromCsv_ProductObject_ValidProductObject()
         {
             Reader reader = new Reader();
-            var data = reader.ReadDataFromCsv<Product>(_filename);
+            var data = reader.ReadDataFromCsvTemp<Product>(_filename);
 
             Assert.AreEqual(4, data.Count());
         }

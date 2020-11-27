@@ -1,8 +1,6 @@
 ﻿using Logic.Models;
-using Logic.Services;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Logic.Services
 {
@@ -25,8 +23,7 @@ namespace Logic.Services
             var couponInformation = this._couponService.ValidateCoupon(coupon);
             if (couponInformation != null)
             {
-                double discount = couponInformation.discount * 10;
-                this._receipt.totalPrice *= discount;
+                this._receipt.discount = couponInformation.discount * 100;
             }
             this._receipt.products = items;
         }

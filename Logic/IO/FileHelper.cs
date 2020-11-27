@@ -23,5 +23,14 @@ namespace Logic.IO
                 File.Delete(file);
             }
         }
+
+        public static void DeleteTempFile(string fileName)
+        {
+            string file = GetTempFileLocation(fileName);
+            if (File.Exists(file))
+            {
+                File.Delete(file);
+            }
+        }
     }
 }

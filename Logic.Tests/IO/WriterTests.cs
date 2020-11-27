@@ -25,10 +25,10 @@ namespace Logic.IO.Tests
             };
 
             Writer writer = new Writer();
-            writer.WriteDataToCsv(list, testfile);
+            writer.WriteDataToCsvTemp(list, testfile);
 
             Reader reader = new Reader();
-            var output = reader.ReadDataFromCsv<Product>(testfile);
+            var output = reader.ReadDataFromCsvTemp<Product>(testfile);
 
             Assert.AreEqual(list.Count, output.Count());
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Logic.IO;
 using Logic.Models;
 
@@ -21,6 +20,7 @@ namespace Logic.Services
         }
         public void SaveCart()
         {
+            FileHelper.DeleteFile("saved_cart.csv");
             this._writer.WriteDataToCsv(this._currentCart, "saved_cart.csv");
         }
 

@@ -13,7 +13,6 @@ namespace Logic.Services.Tests
     {
         private ProductService _productService = new ProductService();
         private string _filename = "products.csv";
-        [TestInitialize]
         public void Startup()
         {
             var list = new List<Product>()
@@ -25,13 +24,13 @@ namespace Logic.Services.Tests
             };
 
             Writer writer = new Writer();
-            writer.WriteDataToCsv(list, _filename);
+            writer.WriteDataToCsvTemp(list, _filename);
         }
 
         [TestCleanup]
         public void Cleanup()
         {
-            FileHelper.DeleteFile(_filename);
+            FileHelper.DeleteTempFile(_filename);
         }
 
         [TestMethod]
@@ -40,12 +39,11 @@ namespace Logic.Services.Tests
             try
             {
                 this._productService.FetchProducts();
-            } catch (IndexOutOfRangeException iore)
+            }
+            catch (IndexOutOfRangeException iore)
             {
                 Assert.AreEqual("No products found", iore.Message);
             }
         }
-
-        
     }
 }

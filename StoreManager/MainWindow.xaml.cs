@@ -65,7 +65,7 @@ namespace StoreManager
 
             foreach (Coupon c in coupons)
             {
-                couponBox.Items.Add($"{c.code} - {c.discount}%");
+                couponBox.Items.Add($"{c.code} - {c.discount * 100}%");
             }
         }
 
@@ -217,6 +217,8 @@ namespace StoreManager
         private void SaveBtnClick(object sender, RoutedEventArgs e)
         {
             Writer writer = new Writer();
+            FileHelper.DeleteTempFile("products.csv");
+            FileHelper.DeleteFile("coupons.csv");
             writer.WriteDataToCsvTemp(products, "products.csv");
             writer.WriteDataToCsv(coupons, "coupons.csv");
             MessageBox.Show("Store saved!");
@@ -230,7 +232,6 @@ namespace StoreManager
             if (dialog.ShowDialog() == true) // If the dialog wasn't cancelled
             {
                 newImagePath = dialog.InitialDirectory + dialog.FileName;
-                MessageBox.Show("NewImagePath: " + newImagePath);
             }
         }
 
@@ -279,10 +280,12 @@ namespace StoreManager
 
         private void RemoveProductItem(object sender, RoutedEventArgs e)
         {
+            products.RemoveAt(productsBox.SelectedIndex);
             productsBox.Items.Remove(productsBox.SelectedItem);
         }
         private void RemoveCouponItem(object sender, RoutedEventArgs e)
         {
+            coupons.RemoveAt(couponBox.SelectedIndex);
             couponBox.Items.Remove(couponBox.SelectedItem);
         }
 
