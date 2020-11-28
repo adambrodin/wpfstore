@@ -20,10 +20,9 @@ namespace StoreManager
         private CouponService couponService;
         private StackPanel stackPanel;
         private ListBox productsBox, couponBox;
-        private TextBox couponNameBox, couponDiscountBox, productNameBox, productDescriptionBox, productPriceBox;
+        private TextBox couponNameBox, couponDiscountBox, productNameBox, productDescriptionBox, productPriceBox, productImagePathBox;
         private Border border;
-        private Button addCouponBtn, addImageBtn, addProductBtn, saveBtn;
-        private string newImagePath;
+        private Button addCouponBtn, addImageBtn, addProductBtn, saveBtn, clearBtn, updateProductBtn;
         private double windowWidth = 1280, windowHeight = 720;
         private static readonly Regex allowedDiscountFilter = new Regex("[^0-9.-]+");
         private static readonly Regex allowedCouponNameFilter = new Regex("[^a-zA-Z0-9]");
@@ -43,12 +42,14 @@ namespace StoreManager
             productService = new ProductService { };
             couponService = new CouponService { };
 
-            border = new Border();
-            border.Background = Brushes.LightBlue;
-            border.BorderBrush = Brushes.Black;
-            border.Padding = new Thickness(5);
-            border.BorderThickness = new Thickness(1);
-            border.Child = stackPanel;
+            border = new Border
+            {
+                Background = Brushes.LightBlue,
+                BorderBrush = Brushes.Black,
+                Padding = new Thickness(5),
+                BorderThickness = new Thickness(1),
+                Child = stackPanel
+            };
             Content = border;
 
             FetchStoreInformation();
@@ -58,6 +59,9 @@ namespace StoreManager
 
         private void AddBoxItems()
         {
+            productsBox.Items.Clear();
+            couponBox.Items.Clear();
+
             foreach (Product p in products)
             {
                 productsBox.Items.Add($"{p.title} - ${p.price}");
@@ -92,10 +96,16 @@ namespace StoreManager
                 Height = 400,
                 Margin = new Thickness(25, 100, 0, 0)
             };
+            productsBox.SelectionChanged += ProductSelected;
 
             ContextMenu productMenu = new ContextMenu();
-            productMenu.Items.Add("Remove product");
-            productMenu.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(RemoveProductItem));
+            MenuItem removeProduct = new MenuItem
+            {
+                Header = "Remove Product",
+            };
+
+            removeProduct.Click += RemoveProductClick;
+            productMenu.Items.Add(removeProduct);
             productsBox.ContextMenu = productMenu;
 
             couponBox = new ListBox
@@ -170,6 +180,15 @@ namespace StoreManager
                 Margin = new Thickness(25, -125, 0, 0),
             };
 
+            productImagePathBox = new TextBox
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Width = 200,
+                Height = 25,
+                FontSize = 18,
+                Margin = new Thickness(125, -155, 0, 0),
+            };
+
             addImageBtn = new Button
             {
                 HorizontalAlignment = HorizontalAlignment.Left,
@@ -200,6 +219,26 @@ namespace StoreManager
             };
             saveBtn.Click += SaveBtnClick;
 
+            clearBtn = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Width = 100,
+                Height = 50,
+                Margin = new Thickness(325, -50, 0, 0),
+                Content = "Clear fields"
+            };
+            clearBtn.Click += ClearBtnClick;
+
+            updateProductBtn = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Width = 100,
+                Height = 50,
+                Margin = new Thickness(425, -50, 0, 0),
+                Content = "Update product"
+            };
+            updateProductBtn.Click += UpdateProductBtnClick;
+
             p.Children.Add(productsBox);
             p.Children.Add(couponBox);
             p.Children.Add(couponNameBox);
@@ -211,39 +250,100 @@ namespace StoreManager
             p.Children.Add(addImageBtn);
             p.Children.Add(addProductBtn);
             p.Children.Add(saveBtn);
+            p.Children.Add(productImagePathBox);
+            p.Children.Add(clearBtn);
+            p.Children.Add(updateProductBtn);
             return p;
         }
 
-        private void SaveBtnClick(object sender, RoutedEventArgs e)
+        private void UpdateProductBtnClick(object sender, RoutedEventArgs e)
         {
-            Writer writer = new Writer();
-            FileHelper.DeleteTempFile("products.csv");
-            FileHelper.DeleteFile("coupons.csv");
-            writer.WriteDataToCsvTemp(products, "products.csv");
-            writer.WriteDataToCsv(coupons, "coupons.csv");
-            MessageBox.Show("Store saved!");
+            UpdateProduct();
+            SaveStore();
         }
 
-        private void AddImageBtnClick(object sender, RoutedEventArgs e)
+        private void ClearBtnClick(object sender, RoutedEventArgs e)
+        {
+            productNameBox.Text = "";
+            productDescriptionBox.Text = "";
+            productPriceBox.Text = "";
+            productImagePathBox.Text = "";
+        }
+
+        private string OpenImageDialog()
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Image files (*.png)|*.png";
 
             if (dialog.ShowDialog() == true) // If the dialog wasn't cancelled
             {
-                newImagePath = dialog.InitialDirectory + dialog.FileName;
+                return dialog.InitialDirectory + dialog.FileName;
             }
+
+            return "";
+        }
+
+        private void UpdateProduct()
+        {
+            if (productsBox.SelectedItem != null)
+            {
+                products[productsBox.SelectedIndex].title = productNameBox.Text;
+                products[productsBox.SelectedIndex].description = productDescriptionBox.Text;
+                products[productsBox.SelectedIndex].price = double.Parse(productPriceBox.Text);
+                products[productsBox.SelectedIndex].imagePath = productImagePathBox.Text;
+            }
+
+            AddBoxItems();
+            MessageBox.Show("Product updated");
+        }
+
+        private void ProductSelected(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                Product selectedProduct = products[productsBox.SelectedIndex];
+                productNameBox.Text = selectedProduct.title;
+                productDescriptionBox.Text = selectedProduct.description;
+                productPriceBox.Text = selectedProduct.price.ToString();
+                productImagePathBox.Text = selectedProduct.imagePath;
+            }
+            catch
+            { }
+        }
+
+
+        private void SaveStore()
+        {
+            Writer writer = new Writer();
+            FileHelper.DeleteTempFile("products.csv");
+            FileHelper.DeleteFile("coupons.csv");
+            writer.WriteDataToCsvTemp(products, "products.csv");
+            writer.WriteDataToCsv(coupons, "coupons.csv");
+
+            FetchStoreInformation();
+            AddBoxItems();
+        }
+
+        private void SaveBtnClick(object sender, RoutedEventArgs e)
+        {
+            SaveStore();
+            MessageBox.Show("Store saved!");
+        }
+
+        private void AddImageBtnClick(object sender, RoutedEventArgs e)
+        {
+            productImagePathBox.Text = OpenImageDialog();
         }
 
         private void AddProductBtnClick(object sender, RoutedEventArgs e)
         {
-            if (newImagePath == null)
+            if (productImagePathBox.Text == null)
             {
                 MessageBox.Show("Please add an image first!");
                 return;
             }
 
-            Product p = new Product(productNameBox.Text, productDescriptionBox.Text, newImagePath, double.Parse(productPriceBox.Text));
+            Product p = new Product(productNameBox.Text, productDescriptionBox.Text, productImagePathBox.Text, double.Parse(productPriceBox.Text));
             products.Add(p);
             productsBox.Items.Add($"{p.title} - ${p.price}");
         }
@@ -278,17 +378,17 @@ namespace StoreManager
             stackPanel.Height = windowHeight;
         }
 
-        private void RemoveProductItem(object sender, RoutedEventArgs e)
+        private void RemoveProductClick(object sender, RoutedEventArgs e)
         {
             products.RemoveAt(productsBox.SelectedIndex);
             productsBox.Items.Remove(productsBox.SelectedItem);
         }
+
         private void RemoveCouponItem(object sender, RoutedEventArgs e)
         {
             coupons.RemoveAt(couponBox.SelectedIndex);
             couponBox.Items.Remove(couponBox.SelectedItem);
         }
-
 
     }
 }
