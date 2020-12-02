@@ -30,6 +30,11 @@ namespace Logic.Services
 
         public Receipt Checkout(List<Product> items, String coupon = "")
         {
+            if(items.Count <= 0)
+            {
+                throw new IndexOutOfRangeException("You cannot check out without any items in cart!");
+            }
+
             GenerateReceipt(items, coupon);
             return this._receipt;
         }

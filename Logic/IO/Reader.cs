@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,8 +11,9 @@ namespace Logic.IO
         public IEnumerable<T> Read<T>(string path)
         {
             IEnumerable<T> result = Enumerable.Empty<T>();
-            if(!File.Exists(path))
+            if (!File.Exists(path))
             {
+                Console.WriteLine("File does not exist");
                 return result;
             }
 
