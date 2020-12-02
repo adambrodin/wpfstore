@@ -13,7 +13,6 @@ namespace Logic.IO
             IEnumerable<T> result = Enumerable.Empty<T>();
             if (!File.Exists(path))
             {
-                Console.WriteLine("File does not exist");
                 return result;
             }
 
